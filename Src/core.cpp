@@ -13,7 +13,7 @@ void core() {
     while (1) {
         led.Toggle();
         if (button.IsPushed()) { debug << "poyo" << endl; }
-        
+
         debug << 11.4514f << endl;
 
         HAL_Delay(500);
