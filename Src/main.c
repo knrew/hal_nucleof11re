@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "core.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,6 +45,15 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
+void __io_putchar(uint8_t ch) {
+    HAL_UART_Transmit(&huart2, &ch, 1, 1);
+}
 
 /* USER CODE END PV */
 
@@ -98,17 +107,11 @@ int main(void) {
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
+    core();
     while (1) {
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
-        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-
-        const char buf[] = "poyo\r\n";
-        HAL_UART_Transmit(&huart2, (uint8_t *) buf, sizeof(buf), 100);
-
-        HAL_Delay(100);
-
     }
     /* USER CODE END 3 */
 }
