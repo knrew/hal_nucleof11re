@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-void core();
+void Core();
 
 #ifdef __cplusplus
 };
