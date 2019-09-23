@@ -1,7 +1,8 @@
 #include "main.h"
-#include "core.hpp"
 
 #include "nucleof411re.hpp"
+
+#include "core.hpp"
 
 class Machine {
 public:
@@ -15,18 +16,38 @@ public:
     }
 
     void OnTimer3Interrupt() {
-        static auto s = HAL_GetTick();
-        debug << HAL_GetTick() - s << endl;
-        s = HAL_GetTick();
+//        static auto s = HAL_GetTick();
+//        debug << HAL_GetTick() - s << endl;
+//        s = HAL_GetTick();
     }
 
     void OnTimer4Interrupt() {
-        board.led.Toggle();
+        static constexpr float step = 0.005;
+        static float brightness = 0.f;
+        static bool is_rising = true;
+        if (is_rising) {
+            if ((brightness += step) > 1.f) {
+                brightness = 1.f;
+                is_rising = !is_rising;
+            }
+        } else {
+            if ((brightness -= step) < 0.f) {
+                brightness = 0.f;
+                is_rising = !is_rising;
+            }
+        }
+
+        board.SetLedBrightness(brightness);
+//        board.led.Toggle();
     }
 
     NucleoF411RE board;
     hal::Debug &debug;
 } machine;
+
+void Initialize(TIM_HandleTypeDef *const pwm_led_timer_handler) {
+    machine.board.BindPWMLedTimerHandler(pwm_led_timer_handler);
+}
 
 void Core() {
     machine.run();
