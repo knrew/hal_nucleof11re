@@ -14,13 +14,8 @@ public:
 
     void SetLedBrightness(const float percent) {
         if (pwm_led_timer_handler_ == nullptr) { return; }
-        if (percent < 0.f) {
-            __HAL_TIM_SET_COMPARE(pwm_led_timer_handler_, TIM_CHANNEL_1, 0);
-        } else if (percent > 1.f) {
-            __HAL_TIM_SET_COMPARE(pwm_led_timer_handler_, TIM_CHANNEL_1, 999);
-        } else {
-            __HAL_TIM_SET_COMPARE(pwm_led_timer_handler_, TIM_CHANNEL_1, static_cast<uint32_t>(percent * 999.f));
-        }
+        const auto compare = percent < 0.f ? 0 : percent > 1.f ? 999 : static_cast<uint32_t>(percent * 999.f);
+        __HAL_TIM_SET_COMPARE(pwm_led_timer_handler_, TIM_CHANNEL_1, compare);
     }
 
     void BindPWMLedTimerHandler(TIM_HandleTypeDef *const pwm_led_timer_handler) {

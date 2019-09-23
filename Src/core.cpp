@@ -8,17 +8,18 @@ class Machine {
 public:
     Machine() noexcept : board(), debug(board.debug) {}
 
-    void run() {
+    void Run() {
         while (true) {
-            debug << "poyo" << endl;
-            HAL_Delay(500);
+//            debug << "poyo" << endl;
+//            HAL_Delay(500);
         }
     }
 
     void OnTimer3Interrupt() {
-//        static auto s = HAL_GetTick();
-//        debug << HAL_GetTick() - s << endl;
-//        s = HAL_GetTick();
+        static auto s = HAL_GetTick();
+        if (HAL_GetTick() - s < 1000) { return; }
+        debug << "poyo | " << HAL_GetTick() - s << endl;
+        s = HAL_GetTick();
     }
 
     void OnTimer4Interrupt() {
@@ -50,7 +51,7 @@ void Initialize(TIM_HandleTypeDef *const pwm_led_timer_handler) {
 }
 
 void Core() {
-    machine.run();
+    machine.Run();
     while (true);
 }
 
