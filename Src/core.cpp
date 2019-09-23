@@ -3,21 +3,42 @@
 
 #include "nucleof411re.hpp"
 
-auto board = NucleoF411RE();
-auto &debug = board.debug;
+class Machine {
+public:
+    Machine() noexcept : board(), debug(board.debug) {}
 
-void Core() {
-    while (true) {}
-}
+    void run() {
+        while (true) {
+            debug << "poyo" << endl;
+            HAL_Delay(500);
+        }
+    }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim->Instance == TIM3) {
+    void OnTimer3Interrupt() {
         static auto s = HAL_GetTick();
         debug << HAL_GetTick() - s << endl;
         s = HAL_GetTick();
     }
 
-    if (htim->Instance == TIM4) {
+    void OnTimer4Interrupt() {
         board.led.Toggle();
+    }
+
+    NucleoF411RE board;
+    hal::Debug &debug;
+} machine;
+
+void Core() {
+    machine.run();
+    while (true);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM3) {
+        machine.OnTimer3Interrupt();
+    }
+
+    if (htim->Instance == TIM4) {
+        machine.OnTimer4Interrupt();
     }
 }
